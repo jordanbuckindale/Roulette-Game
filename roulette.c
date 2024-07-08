@@ -1,3 +1,15 @@
+/*
+roulette game with gui, visual spinning wheel and betting table where user can place bets. Game will load with loading screen where pregame funtions run to ensure integrity of bet placing (ie. wheel numbers, betting table catagories).
+
+
+to do: 
+- bettingtableCheck function
+- figure out gui
+- learn how to calculate the wheel spin
+- create loading screen
+- 
+*/
+
 #include<stdio.h>
 
 void checkRouletteNumbers(int rouletteWheelNumbers[]);
@@ -24,8 +36,10 @@ int main() {
     int secondDozen[] = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
     int thirdDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
      
-
     
+    
+
+
      return 0;
 }
 
@@ -64,19 +78,21 @@ void checkRouletteNumbers(int rouletteWheelNumbers[]) {
     printf("ALL numbers are present. \n");
 }
 
-
-void checkBettingTable(void) {
+/*
+Function to check the arrays that represent the betting table outcomes.
+*/
+void checkBettingTable(int redNumbers[], int blackNumbers[], int oddNumbers[], int evenNumbers[], int firstDozen[], int secondDozen[],int thirdDozen[]) {
     
-
-    // must check all these.
-    int redNumbers[] = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
-    int blackNumbers[] = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
-    int oddNumbers[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35};
-    int evenNumbers[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36};
-    int firstDozen[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-    int secondDozen[] = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
-    int thirdDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
+    // check all these values compared to the game values.
+    int redNum[] = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
+    int blackNum[] = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
+    int oddNum[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35};
+    int evenNum[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36};
+    int fDozen[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    int sDozen[] = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
+    int tDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
      
+     // function here.
 
 
 
