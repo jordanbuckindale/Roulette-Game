@@ -58,9 +58,11 @@ int main() {
     printf("Welcome to ROULETTE\n\n");
     printf("with how much money do you want to start?\n\n");
     
-    // read input from user for buy in amount 
-    scanf("%d", &startingMoney);
-
+    // read valid input from user for buy in amount and exit with error code otherwise.
+    if (scanf("%d", &startingMoney) != 1) {
+        printf("Invalid input for starting money.\n");
+        return 1;
+    }
     // insert value of money into new var.
     money = startingMoney;
 
@@ -68,23 +70,35 @@ int main() {
 
         money = money + winnings;
         winnings = 0;
-        printf("How much would you like to bet sir?");
-        scanf("%lf", &bet);
+        printf("How much would you like to bet? ");
+        if (scanf("%lf", &bet) != 1) {
+            printf("Invalid input for bet amount.\n");
+            return 1;
+        }
 
         // condition to make sure that the bet doesnt exceed the total amount of money.
         while(bet > money) {
-            printf("How much would you like to bet sir?");
-            scanf("%lf", &bet);
+            printf("You can't bet more than you have. How much would you like to bet? ");
+            if (scanf("%lf", &bet) != 1) {
+                printf("Invalid input for bet amount.\n");
+                return 1;
+            }
         }
 
         // scan the type of bet
         printf("Would you like to bet on a number(n), on odd/even(o), or on black/red (b)");
-        scanf("%c", &gametype);
+        if (scanf(" %c", &gametype) != 1) {
+            printf("Invalid input for game type.\n");
+            return 1;
+        }
 
         if (gametype == 'n' || gametype == 'N') {
 
             printf("What number would you like to bet on? ");
-            scanf("%d", &number);
+            if (scanf("%d", &number) != 1) {
+                printf("Invalid input for number.\n");
+                return 1;
+            }
 
             if(number == 0) {
                 number = 37;
@@ -93,16 +107,16 @@ int main() {
             srand(time(0));
             random = rand() % 37;
 
+            printf("The ball landed on %d\n", random);  // Use %d for int
+
             if (number != random) {
-                printf("The ball landed on %d\n", &random);
-                printf("You lose %.2f.\n", &winnings);
+                printf("You lose %.2f.\n", bet);
                 winnings -= bet;
             }
 
-            if(number == random) {
-                printf("The ball landed on %d\n", &random);
-                printf("You win %.2f.\n", &winnings);
-                winnings += bet;
+            if (number == random) {
+                printf("You win %.2f.\n", bet * 35);  // Roulette pays 35:1 on a single number
+                winnings += bet * 35;
             }
         }
 
