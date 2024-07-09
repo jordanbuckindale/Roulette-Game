@@ -11,11 +11,14 @@ to do:
 */
 
 #include<stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
 void checkRouletteNumbers(int rouletteWheelNumbers[]);
 
 int main() {
 
+    // roulette variables
     #define numberTotal 37
 
     int rouletteWheelNumbers[numberTotal] = {0, 32, 15, 19, 4, 21,
@@ -30,17 +33,83 @@ int main() {
     
     int redNumbers[] = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
     int blackNumbers[] = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
+    int greenNumbers[] = {0,00};
     int oddNumbers[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35};
     int evenNumbers[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36};
     int firstDozen[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
     int secondDozen[] = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
     int thirdDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
      
-    
-    
 
+    // game variables
+    int const MIN_NUMBER = 0, MAX_NUMBER = 36;
+    int number;
+    int random;
+    int money;
+    int startingMoney;
 
-     return 0;
+    char gametype;
+    char evenoodd;
+    char blackred;
+    char stop = 'N';
+    
+    double bet, winnings = 0;
+
+    printf("Welcome to ROULETTE\n\n");
+    printf("with how much money do you want to start?\n\n");
+    
+    // read input from user for buy in amount 
+    scanf("%d", &startingMoney);
+
+    // insert value of money into new var.
+    money = startingMoney;
+
+    while(money > 0 && stop != 'y') {
+
+        money = money + winnings;
+        winnings = 0;
+        printf("How much would you like to bet sir?");
+        scanf("%lf", &bet);
+
+        // condition to make sure that the bet doesnt exceed the total amount of money.
+        while(bet > money) {
+            printf("How much would you like to bet sir?");
+            scanf("%lf", &bet);
+        }
+
+        // scan the type of bet
+        printf("Would you like to bet on a number(n), on odd/even(o), or on black/red (b)");
+        scanf("%c", &gametype);
+
+        if (gametype == 'n' || gametype == 'N') {
+
+            printf("What number would you like to bet on? ");
+            scanf("%d", &number);
+
+            if(number == 0) {
+                number = 37;
+            }
+
+            srand(time(0));
+            random = rand() % 37;
+
+            if (number != random) {
+                printf("The ball landed on %d\n", &random);
+                printf("You lose %.2f.\n", &winnings);
+                winnings -= bet;
+            }
+
+            if(number == random) {
+                printf("The ball landed on %d\n", &random);
+                printf("You win %.2f.\n", &winnings);
+                winnings += bet;
+            }
+        }
+
+    
+    }
+
+    return 0;
 }
 
 
@@ -93,7 +162,4 @@ void checkBettingTable(int redNumbers[], int blackNumbers[], int oddNumbers[], i
     int tDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
      
      // function here.
-
-
-
 }
