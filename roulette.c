@@ -8,6 +8,14 @@ to do:
 - learn how to calculate the wheel spin
 - create loading screen
 - 
+
+
+number bet: 
+- prompt to play round or exit (y/n) 
+- ask for bet amount
+- fix invalid input reprompt
+- prompt for account balance
+
 */
 
 #include<stdio.h>
@@ -15,22 +23,28 @@ to do:
 #include <time.h>
 
 void checkRouletteNumbers(int rouletteWheelNumbers[]);
+char loadingScreen(int rouletteWheelNumbers[]);
+int placeNumberBet(int number,double bet, int random);
+int placeOddEvenBet();
+int palceBlackRedBet();
+int numberGenerator();
+void AccBalanceReport(int money, int startingMoney, int counter);
 
 int main() {
 
-    // roulette variables
-    #define numberTotal 37
 
+    #define numberTotal 37
+        
     int rouletteWheelNumbers[numberTotal] = {0, 32, 15, 19, 4, 21,
-                                             2, 25, 17, 34, 6, 27,
-                                             13, 36, 11, 30, 8, 23, 
-                                             10, 5, 24, 16, 33, 1,
-                                             20, 14, 31, 9, 22, 18, 
-                                             29, 7, 28, 12, 35, 3,
-                                             26};
+                                                2, 25, 17, 34, 6, 27,
+                                                13, 36, 11, 30, 8, 23, 
+                                                10, 5, 24, 16, 33, 1,
+                                                20, 14, 31, 9, 22, 18, 
+                                                29, 7, 28, 12, 35, 3,
+                                                26};
 
     checkRouletteNumbers(rouletteWheelNumbers);
-    
+
     int redNumbers[] = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
     int blackNumbers[] = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
     int greenNumbers[] = {0,00};
@@ -39,14 +53,14 @@ int main() {
     int firstDozen[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
     int secondDozen[] = {13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
     int thirdDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
-     
 
-    // game variables
     int const MIN_NUMBER = 0, MAX_NUMBER = 36;
+    int beginning;
     int number;
-    int random;
     int money;
+    int random;
     int startingMoney;
+    int counter;
 
     char gametype;
     char evenoodd;
@@ -55,72 +69,72 @@ int main() {
     
     double bet, winnings = 0;
 
-    printf("Welcome to ROULETTE\n\n");
-    printf("with how much money do you want to start?\n\n");
-    
-    // read valid input from user for buy in amount and exit with error code otherwise.
-    if (scanf("%d", &startingMoney) != 1) {
-        printf("Invalid input for starting money.\n");
-        return 1;
-    }
-    // insert value of money into new var.
-    money = startingMoney;
+    beginning = loadingScreen(rouletteWheelNumbers);
 
-    while(money > 0 && stop != 'y') {
+    if (beginning == 'p' || beginning == 'p') {
 
-        money = money + winnings;
-        winnings = 0;
-        printf("How much would you like to bet? ");
-        if (scanf("%lf", &bet) != 1) {
-            printf("Invalid input for bet amount.\n");
+        printf("\n\nWith how much money do you want to start? \n");
+        
+        // read valid input from user for buy in amount and exit with error code otherwise.
+        if (scanf("%d", &startingMoney) != 1) {
+            printf("Invalid input for starting money.\n");
             return 1;
         }
+        // insert value of money into new var.
+        money = startingMoney;
 
-        // condition to make sure that the bet doesnt exceed the total amount of money.
-        while(bet > money) {
-            printf("You can't bet more than you have. How much would you like to bet? ");
+        while(money > 0 && stop != 'y') {
+
+            money = money + winnings;
+            winnings = 0;
+            AccBalanceReport(money, startingMoney, counter);
+
+            counter += 1;
+            printf("\nHow much would you like to bet? \n");
             if (scanf("%lf", &bet) != 1) {
                 printf("Invalid input for bet amount.\n");
                 return 1;
             }
-        }
 
-        // scan the type of bet
-        printf("Would you like to bet on a number(n), on odd/even(o), or on black/red (b)");
-        if (scanf(" %c", &gametype) != 1) {
-            printf("Invalid input for game type.\n");
-            return 1;
-        }
+            // condition to make sure that the bet doesnt exceed the total amount of money.
+            while(bet > money) {
+                printf("You can't bet more than you have. How much would you like to bet? \n");
+                if (scanf("%lf", &bet) != 1) {
+                    printf("Invalid input for bet amount.\n");
+                    return 1;
+                }
+            }
 
-        if (gametype == 'n' || gametype == 'N') {
-
-            printf("What number would you like to bet on? ");
-            if (scanf("%d", &number) != 1) {
-                printf("Invalid input for number.\n");
+            // scan the type of bet
+            printf("\nWould you like to bet on a number(n), on odd/even(o), or on black/red (b) \n");
+            if (scanf(" %c", &gametype) != 1) {
+                printf("Invalid input for game type.\n");
                 return 1;
             }
 
-            if(number == 0) {
-                number = 37;
+            // generate number after bet selected.
+            random = numberGenerator();
+
+
+            if (gametype == 'n' || gametype == 'N') {
+
+                winnings = placeNumberBet(number, bet, random);
+
             }
 
-            srand(time(0));
-            random = rand() % 37;
+            if (gametype == 'o' || gametype == 'O') {
 
-            printf("The ball landed on %d\n", random);  // Use %d for int
+                //winnings = placeOddEvenBet(number, bet, random);
 
-            if (number != random) {
-                printf("You lose %.2f.\n", bet);
-                winnings -= bet;
             }
 
-            if (number == random) {
-                printf("You win %.2f.\n", bet * 35);  // Roulette pays 35:1 on a single number
-                winnings += bet * 35;
+            if (gametype == 'b' || gametype == 'B') {
+
+                //winnings = placeBlacKRedBet(number, bet, random);
+
             }
+
         }
-
-    
     }
 
     return 0;
@@ -158,7 +172,20 @@ void checkRouletteNumbers(int rouletteWheelNumbers[]) {
             }   
     }
     // if successful, output and continue game.
-    printf("ALL numbers are present. \n");
+    for (int i = 0; i < 20; i++) {
+        printf("%*s", i, "*");
+        printf("Loading...");
+        printf("%*s\n", 20-i, "*");
+    }
+
+    for (int i = 0; i < 20; i++) {
+        printf("%*s", 20-i, "*");
+        printf("Loading...");
+        printf("%*s\n", i, "*");
+    }
+
+    printf("*****ALL NUMBERS PRESENT******\n\n");
+
 }
 
 /*
@@ -176,4 +203,84 @@ void checkBettingTable(int redNumbers[], int blackNumbers[], int oddNumbers[], i
     int tDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
      
      // function here.
+}
+
+
+int placeOddEvenBet();
+int palceBlackRedBet();
+
+
+int placeNumberBet(int number, double bet, int random) {
+
+    double payout;
+    char answer;
+
+    printf("\nWhat number would you like to bet on? \n");
+    
+    if (scanf("%d", &number) != 1) {
+        printf("Invalid input for number.\n");
+        return 1;
+    }
+ 
+    printf("\n     %.0f$ placed on %d\n", bet, number);
+    printf("--------------------------");
+    printf("\n  The ball landed on %d\n", random);  // Use %d for int
+
+
+    if (number != random) {
+        printf("\n     You lose %.2f!\n", bet);
+        payout -= bet;
+    }
+    
+
+    if (number == random) {
+        printf("\n     You win %.2f!\n", bet * 35);  // Roulette pays 35:1 on a single number
+        payout += bet * 35;
+    }
+
+
+
+    return payout;
+}
+
+int numberGenerator(void) {
+
+    int num;
+
+    srand(time(0));
+    num = rand() % 37;
+
+    return num;
+}
+
+
+char loadingScreen(int rouletteWheelNumbers[]) { 
+
+    char start; 
+    printf("-----WELCOME TO ROULETTE-----\n\n");
+    printf("Menu: \n");
+    printf("- Play     (p) \n");
+    printf("- Settings (s) \n");
+    printf("- Exit     (e) \n\n");
+
+    printf("Select menu item: ");
+
+    if (scanf(" %c", &start) != 1) {
+            printf("Invalid entry.\n");
+            return 1;
+    }
+
+    return start;
+}
+
+void AccBalanceReport(int money, int startingMoney, int counter) {
+
+    printf("--------------------------\n\n");
+    printf("         Summary          \n\n");
+    
+    printf("Account Balance:  $%d\n", money);
+    printf("Total Winnings:    %d\n", money-startingMoney);
+    printf("Number of Bets:    %d\n\n", counter);
+    
+    printf("--------------------------\n");
 }
