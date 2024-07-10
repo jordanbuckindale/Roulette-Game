@@ -7,14 +7,31 @@ to do:
 - figure out gui
 - learn how to calculate the wheel spin
 - create loading screen
-- 
 
 
-number bet: 
-- prompt to play round or exit (y/n) 
-- ask for bet amount
-- fix invalid input reprompt
-- prompt for account balance
+first layer:
+Menu  
+- play (second layer)
+- settings (configs)
+- exit (exit program)
+
+
+second layer:
+- place bet (third layer)
+- table summary (visual output)
+- return to lobby (back to first layer)
+
+third layer:
+- place bets (fourth layer)
+- bet summary (visual output)
+- confirm bet (visual output and compute then back to second layer)
+-back (back to second layer)
+
+fourth layer:
+- odd even (function)
+- red black (function)
+- number    (function)
+
 
 */
 
@@ -22,11 +39,12 @@ number bet:
 #include <stdlib.h>
 #include <time.h>
 
+
 void checkRouletteNumbers(int rouletteWheelNumbers[]);
 char loadingScreen(int rouletteWheelNumbers[]);
 int placeNumberBet(int number,double bet, int random);
 int placeOddEvenBet();
-int palceBlackRedBet();
+int placeBlackRedBet();
 int numberGenerator();
 void AccBalanceReport(int money, int startingMoney, int counter);
 
@@ -223,8 +241,8 @@ int placeNumberBet(int number, double bet, int random) {
     }
  
     printf("\n     %.0f$ placed on %d\n", bet, number);
-    printf("--------------------------");
-    printf("\n  The ball landed on %d\n", random);  // Use %d for int
+    printf("--------------------------\n");
+    printf("  The ball landed on %d\n", random);  // Use %d for int
 
 
     if (number != random) {
@@ -275,12 +293,17 @@ char loadingScreen(int rouletteWheelNumbers[]) {
 
 void AccBalanceReport(int money, int startingMoney, int counter) {
 
+    int winnings = money - startingMoney;
+
+    if(winnings < 0) {
+        winnings = 0;
+    }
+
+
     printf("--------------------------\n\n");
     printf("         Summary          \n\n");
-    
     printf("Account Balance:  $%d\n", money);
-    printf("Total Winnings:    %d\n", money-startingMoney);
+    printf("Total Winnings:    %d\n", winnings);
     printf("Number of Bets:    %d\n\n", counter);
-    
     printf("--------------------------\n");
 }
