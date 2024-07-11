@@ -196,6 +196,7 @@ void checkRouletteNumbers(int rouletteWheelNumbers[]) {
                 return;
             }   
     }
+    
     // if successful, output and continue game.
     for (int i = 0; i < 20; i++) {
         printf("%*s", i, "*");
