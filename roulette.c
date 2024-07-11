@@ -33,6 +33,9 @@ fourth layer:
 - number    (function)
 
 
+// remove number from number parameters and have as varaible in function?
+
+
 */
 
 #include<stdio.h>
@@ -43,8 +46,8 @@ fourth layer:
 void checkRouletteNumbers(int rouletteWheelNumbers[]);
 char loadingScreen(int rouletteWheelNumbers[]);
 int placeNumberBet(int number,double bet, int random);
-int placeOddEvenBet();
-int placeBlackRedBet();
+int placeOddEvenBet(int number, double bet, int random);
+int placeBlackRedBet(int number, double bet, int random, int blackNumbers[], int redNumbers[]);
 int numberGenerator();
 void AccBalanceReport(int money, int startingMoney, int counter);
 
@@ -127,6 +130,10 @@ int main() {
             printf("\nWould you like to bet on a number(n), on odd/even(o), or on black/red (b) \n");
             if (scanf(" %c", &gametype) != 1) {
                 printf("Invalid input for game type.\n");
+
+                //idea to have while loop to keep reprompting until valid answer
+                //printf("\n Bet types:\n - bet on number(n)\n - bet on odd/even(o)\n - bet on black(b) \n");
+
                 return 1;
             }
 
@@ -142,13 +149,13 @@ int main() {
 
             if (gametype == 'o' || gametype == 'O') {
 
-                //winnings = placeOddEvenBet(number, bet, random);
+                winnings = placeOddEvenBet(number, bet, random);
 
             }
 
             if (gametype == 'b' || gametype == 'B') {
 
-                //winnings = placeBlacKRedBet(number, bet, random);
+                winnings = placeBlackRedBet(number, bet, random, blackNumbers, redNumbers);
 
             }
 
@@ -224,14 +231,136 @@ void checkBettingTable(int redNumbers[], int blackNumbers[], int oddNumbers[], i
 }
 
 
-int placeOddEvenBet();
-int palceBlackRedBet();
+int placeOddEvenBet(int number, double bet, int random) {
+
+    double payout;
+    char choice;
+
+
+    printf("Would you like to bet on odd (o) or even (e) numbers? \n");
+    if (scanf(" %c", &choice) != 1) {
+        printf("Invalid input for game type.\n");
+        return 1;
+    }
+    
+
+    //if user selects 'o' or 'O' then a bet will be placed on all odd numbers.
+    if(choice == 'o' || choice == 'O') {
+
+        printf("\n   %.0f$ placed on odd\n", bet);
+        printf("--------------------------\n");
+        printf("  The ball landed on %d\n", random);
+
+        // lose
+        if (random % 2 == 0) {
+        printf("\n     You lose %.2f!\n", bet);
+        payout -= bet;
+        }
+    
+        //win
+        if (random != 0 && random % 2 != 0) {
+        printf("\n     You win %.2f!\n", bet);  
+        payout += bet;
+        }
+    }
+    //if user selects 'e' or 'E' then a bet will be placed on all even numbers.
+    if(choice == 'e' || choice == 'E') {
+
+        printf("\n   %.0f$ placed on even\n", bet);
+        printf("--------------------------\n");
+        printf("  The ball landed on %d\n", random);
+
+        // lose
+        if (random != 0 && random % 2 != 0) {
+        printf("\n     You lose %.2f!\n", bet);
+        payout -= bet;
+        }
+    
+        //win
+        if (random % 2 == 0) {
+        printf("\n     You win %.2f!\n", bet);  
+        payout += bet;
+        }
+
+    }
+
+    return payout;
+    
+}
+
+int placeBlackRedBet(int number, double bet, int random, int blackNumbers[], int redNumbers[]) {
+
+    double payout = 0;
+    char choice;
+    int status = 0;
+
+    printf("\nwould you like to bet on black (b) or red (r)? \n");
+    if (scanf(" %c", &choice) != 1) {
+            printf("Invalid input for game type.\n");
+            return 1;
+        }
+
+    if(choice == 'b' || choice == 'B') {
+
+        printf("\n  %.0f$ placed on black\n", bet);
+        printf("--------------------------\n");
+        printf("  The ball landed on %d\n", random);
+
+        for (int i = 0; i < 19; i++) {
+            if(random == blackNumbers[i]) {
+                status = 1;
+                break;
+            }
+        }
+
+        // lose
+        if (status == 0) {
+        printf("\n     You lose %.2f!\n", bet);
+        payout -= bet;
+        }
+    
+        //win
+        if (status == 1) {
+        printf("\n     You win %.2f!\n", bet);  
+        payout += bet;
+        }
+    }
+    //if user selects 'r' or 'R' then a bet will be placed on all red numbers.
+    if(choice == 'r' || choice == 'R') {
+
+        printf("\n  %.0f$ placed on red\n", bet);
+        printf("--------------------------\n");
+        printf("  The ball landed on %d\n", random);
+
+
+        for (int i = 0; i < 19; i++) {
+            if(random == redNumbers[i]) {
+                status = 1;
+                break;
+            }
+        }
+
+        // lose
+        if (status == 0) {
+        printf("\n     You lose %.2f!\n", bet);
+        payout -= bet;
+        }
+    
+        //win
+        if (status == 1) {
+        printf("\n     You win %.2f!\n", bet);  
+        payout += bet;
+        }
+    }
+
+    return payout;
+}
 
 
 int placeNumberBet(int number, double bet, int random) {
 
     double payout;
-    char answer;
+
 
     printf("\nWhat number would you like to bet on? \n");
     
