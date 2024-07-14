@@ -11,31 +11,29 @@ to do:
 
 first layer:
 Menu  
-- play (second layer)
-- settings (configs)
-- exit (exit program)
+- play            (second layer)
+- settings        (configs)
+- exit            (exit program)
 
 
 second layer:
-- place bet (third layer)
-- table summary (visual output)
+- place bet       (third layer)
+- table summary   (visual output)
 - return to lobby (back to first layer)
 
 third layer:
-- place bets (fourth layer)
-- bet summary (visual output)
-- confirm bet (visual output and compute then back to second layer)
--back (back to second layer)
+- place bets      (fourth layer)
+- bet summary     (visual output)
+- confirm bet     (visual output and compute then back to second layer)
+- back            (back to second layer)
 
 fourth layer:
-- odd even (function)
-- red black (function)
-- number    (function)
+- odd even        (function)
+- red black       (function)
+- number          (function)
 
 
 // remove number from number parameters and have as varaible in function?
-
-
 */
 
 #include<stdio.h>
@@ -44,19 +42,25 @@ fourth layer:
 
 
 void checkRouletteNumbers(int rouletteWheelNumbers[]);
-char loadingScreen(int rouletteWheelNumbers[]);
-int placeNumberBet(int number,double bet, int random);
-int placeOddEvenBet(int number, double bet, int random);
-int placeBlackRedBet(int number, double bet, int random, int blackNumbers[], int redNumbers[]);
+int placeOddEvenBet(double bet, int random);
+int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[]);
+int placeNumberBet(double bet, int random);
 int numberGenerator();
+char loadingScreen(int rouletteWheelNumbers[]);
+char playScreen();
+char settingsScreen();
+int initializeStartingMoney();
+double initializeBet(int money);
+int placeBet(double bet, int random, int blackNumbers[], int redNumbers[]);
 void AccBalanceReport(int money, int startingMoney, int counter);
+char promptQuit();
 
 int main() {
 
 
     #define numberTotal 37
         
-    int rouletteWheelNumbers[numberTotal] = {0, 32, 15, 19, 4, 21,
+    int rouletteWheelNumbers[numberTotal] =    {0, 32, 15, 19, 4, 21,
                                                 2, 25, 17, 34, 6, 27,
                                                 13, 36, 11, 30, 8, 23, 
                                                 10, 5, 24, 16, 33, 1,
@@ -68,7 +72,7 @@ int main() {
 
     int redNumbers[] = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
     int blackNumbers[] = {2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35};
-    int greenNumbers[] = {0,00};
+    int greenNumbers[] = {0};
     int oddNumbers[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35};
     int evenNumbers[] = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36};
     int firstDozen[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
@@ -76,7 +80,12 @@ int main() {
     int thirdDozen[] = {25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36};
 
     int const MIN_NUMBER = 0, MAX_NUMBER = 36;
+    
     int beginning;
+    int playChoice;
+
+
+
     int number;
     int money;
     int random;
@@ -92,77 +101,50 @@ int main() {
 
     beginning = loadingScreen(rouletteWheelNumbers);
 
-    if (beginning == 'p' || beginning == 'p') {
-
-        printf("\n\nWith how much money do you want to start? \n");
+    if (beginning == 'p' || beginning == 'P') {
         
-        // read valid input from user for buy in amount and exit with error code otherwise.
-        if (scanf("%d", &startingMoney) != 1) {
-            printf("Invalid input for starting money.\n");
-            return 1;
+        playChoice = playScreen();
+
+        if (playChoice == 'p' || playChoice == 'P') {
+           
+            
+            // insert value of money into new var.
+            money = initializeStartingMoney();
+
+            while(money > 0 && stop != 'y') {
+
+                money = money + winnings;
+                winnings = 0;
+                AccBalanceReport(money, startingMoney, counter);
+
+                counter += 1;
+                
+                bet = initializeBet(money);
+                
+                
+                winnings = placeBet(bet, random, blackNumbers, redNumbers);
+                stop = promptQuit();
+                
+            }
         }
-        // insert value of money into new var.
-        money = startingMoney;
 
-        while(money > 0 && stop != 'y') {
+        if (playChoice == 't' || playChoice == 'T') {
 
-            money = money + winnings;
-            winnings = 0;
             AccBalanceReport(money, startingMoney, counter);
 
-            counter += 1;
-            printf("\nHow much would you like to bet? \n");
-            if (scanf("%lf", &bet) != 1) {
-                printf("Invalid input for bet amount.\n");
-                return 1;
-            }
-
-            // condition to make sure that the bet doesnt exceed the total amount of money.
-            while(bet > money) {
-                printf("You can't bet more than you have. How much would you like to bet? \n");
-                if (scanf("%lf", &bet) != 1) {
-                    printf("Invalid input for bet amount.\n");
-                    return 1;
-                }
-            }
-
-            // scan the type of bet
-            printf("\nWould you like to bet on a number(n), on odd/even(o), or on black/red (b) \n");
-            if (scanf(" %c", &gametype) != 1) {
-                printf("Invalid input for game type.\n");
-
-                //idea to have while loop to keep reprompting until valid answer
-                //printf("\n Bet types:\n - bet on number(n)\n - bet on odd/even(o)\n - bet on black(b) \n");
-
-                return 1;
-            }
-
-            // generate number after bet selected.
-            random = numberGenerator();
+        }
 
 
-            if (gametype == 'n' || gametype == 'N') {
-
-                winnings = placeNumberBet(number, bet, random);
-
-            }
-
-            if (gametype == 'o' || gametype == 'O') {
-
-                winnings = placeOddEvenBet(number, bet, random);
-
-            }
-
-            if (gametype == 'b' || gametype == 'B') {
-
-                winnings = placeBlackRedBet(number, bet, random, blackNumbers, redNumbers);
-
-            }
-
+        if (playChoice == 'x' || playChoice == 'X') {
+        
+            beginning = loadingScreen(rouletteWheelNumbers);
         }
     }
 
+
+
     return 0;
+    
 }
 
 
@@ -232,7 +214,7 @@ void checkBettingTable(int redNumbers[], int blackNumbers[], int oddNumbers[], i
 }
 
 
-int placeOddEvenBet(int number, double bet, int random) {
+int placeOddEvenBet( double bet, int random) {
 
     double payout;
     char choice;
@@ -289,7 +271,7 @@ int placeOddEvenBet(int number, double bet, int random) {
     
 }
 
-int placeBlackRedBet(int number, double bet, int random, int blackNumbers[], int redNumbers[]) {
+int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[]) {
 
     double payout = 0;
     char choice;
@@ -358,9 +340,10 @@ int placeBlackRedBet(int number, double bet, int random, int blackNumbers[], int
 }
 
 
-int placeNumberBet(int number, double bet, int random) {
+int placeNumberBet(double bet, int random) {
 
     double payout;
+    int number;
 
 
     printf("\nWhat number would you like to bet on? \n");
@@ -386,12 +369,10 @@ int placeNumberBet(int number, double bet, int random) {
         payout += bet * 35;
     }
 
-
-
     return payout;
 }
 
-int numberGenerator(void) {
+int numberGenerator() {
 
     int num;
 
@@ -421,6 +402,141 @@ char loadingScreen(int rouletteWheelNumbers[]) {
     return start;
 }
 
+char playScreen() {
+
+    char choice; 
+    printf("------------PLAY--------------\n\n");
+    printf("Play Menu: \n");
+    printf("- Place Bet       (p) \n");
+    printf("- Table Summary   (t) \n");
+    printf("- Exit to Lobby   (x) \n\n");
+
+    printf("Select menu item: ");
+
+    if (scanf(" %c", &choice) != 1) {
+            printf("Invalid entry.\n");
+            return 1;
+
+   }
+
+    return choice;
+}
+
+
+
+
+/*
+Function to allow user to configure settings for the game.
+
+Ideas:
+- table minimum bets
+- high rollers table (extra 00)
+- maximum bets
+*/
+//char settingsScreen() {
+    
+    //char start; 
+    //printf("-----------SETTINGS------------\n\n");
+    //printf("Menu: \n");
+    //printf("- Play     (p) \n");
+    //printf("- Settings (s) \n");
+    //printf("- Exit     (e) \n\n");
+
+    //printf("Select menu item: ");
+
+    //if (scanf(" %c", &start) != 1) {
+    //        printf("Invalid entry.\n");
+    //        return 1;
+    //}
+
+    //return start;
+
+//}
+
+
+int initializeStartingMoney() {
+
+    int startingMoney;
+
+    printf("\n\nWith how much money do you want to start? \n");
+        
+    // read valid input from user for buy in amount and exit with error code otherwise.
+    while (scanf("%d", &startingMoney) != 1) {
+        printf("Invalid input for starting money.\n");
+        printf("With how much money do you want to start? \n");
+    }
+
+    return startingMoney;
+    
+}
+
+double initializeBet(int money) {
+
+    double bet;
+
+    printf("\nHow much would you like to bet? \n");
+    while((scanf("%lf", &bet) != 1)) {
+        printf("Invalid input for bet amount.\n");
+        return 1;
+    }
+
+    // condition to make sure that the bet doesnt exceed the total amount of money.
+    while(bet > money) {
+        printf("You can't bet more than you have. How much would you like to bet? \n");
+        while(scanf("%lf", &bet) != 1) {
+
+            printf("Invalid input for bet amount.\n");
+            printf("How much would you like to bet? \n");
+        }
+    }
+
+    return bet;
+
+}
+
+
+int placeBet(double bet, int random,int blackNumbers[], int redNumbers[]) {
+    
+    int number;
+    char gametype;
+    double winnings;
+    
+    // scan the type of bet
+    printf("\nWould you like to bet on a number(n), on odd/even(o), or on black/red (b) \n");
+    if (scanf(" %c", &gametype) != 1) {
+        printf("Invalid input for game type.\n");
+
+        //idea to have while loop to keep reprompting until valid answer
+        //printf("\n Bet types:\n - bet on number(n)\n - bet on odd/even(o)\n - bet on black(b) \n");
+
+        return 1;
+    }
+
+    // generate number after bet selected.
+    random = numberGenerator();
+
+
+    if (gametype == 'n' || gametype == 'N') {
+
+        winnings = placeNumberBet(bet, random);
+
+    }
+
+    if (gametype == 'o' || gametype == 'O') {
+
+        winnings = placeOddEvenBet(bet, random);
+
+    }
+
+    if (gametype == 'b' || gametype == 'B') {
+
+        winnings = placeBlackRedBet(bet, random, blackNumbers, redNumbers);
+
+    }
+
+    return winnings;
+}
+
 void AccBalanceReport(int money, int startingMoney, int counter) {
 
     int winnings = money - startingMoney;
@@ -436,4 +552,20 @@ void AccBalanceReport(int money, int startingMoney, int counter) {
     printf("Total Winnings:    %d\n", winnings);
     printf("Number of Bets:    %d\n\n", counter);
     printf("--------------------------\n");
+
+}
+
+char promptQuit() {
+    
+    char stop;
+    printf("Would you like to quit (y/n)? ");
+
+    if (scanf(" %c", &stop) != 1) {
+            printf("Invalid entry.\n");
+            return 1;
+
+   }    
+
+   return stop;
+
 }
