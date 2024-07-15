@@ -81,12 +81,11 @@ int main() {
 
     int const MIN_NUMBER = 0, MAX_NUMBER = 36;
     
+    // initialize variables to store players choice.
     int beginning;
     int playChoice;
 
-
-
-    int number;
+    //initizalize all other variables.
     int money;
     int random;
     int startingMoney;
@@ -99,58 +98,66 @@ int main() {
     
     double bet, winnings = 0;
 
+    // call function to present loading screen and prompt user for input. 
     beginning = loadingScreen(rouletteWheelNumbers);
 
+    // if statement for when user inputs 'p' or 'P' to play, allowing the user to place bet.
     if (beginning == 'p' || beginning == 'P') {
         
+        // call function to present play screen, and prompt user for input.
         playChoice = playScreen();
 
+        // checks user input for 'p' or 'P' to initiate money and place bet.  
         if (playChoice == 'p' || playChoice == 'P') {
            
-            
-            // insert value of money into new var.
+            // function that facilitates processing users starting money.
             money = initializeStartingMoney();
 
+            // while loop that allows user to place bets as long as money is still in account and user hasnt prompted to quit.
             while(money > 0 && stop != 'y') {
 
+                // add winnings from bet and initialize back to 0, ready for next bet.
                 money = money + winnings;
                 winnings = 0;
+
+                // call function to present account summary.
                 AccBalanceReport(money, startingMoney, counter);
 
+                // incremented variable that is used in AccBalanceReport(). Keeps track of how many bets are placed by user. 
                 counter += 1;
                 
+                // call function that prompts user for bet amount. 
                 bet = initializeBet(money);
                 
-                
+                // call function that allows user to place bet. Function that facilitates bet for user; what kind of bet, spin table, and result of spin then returns winnings. 
                 winnings = placeBet(bet, random, blackNumbers, redNumbers);
+
+                // call function to prompt user to quit. stores results and is checked through while loop.
                 stop = promptQuit();
                 
             }
         }
 
+        // if statement for when user inputs 't' or 'T' to report account summary, allowing user to view betting history.
         if (playChoice == 't' || playChoice == 'T') {
 
             AccBalanceReport(money, startingMoney, counter);
-
         }
 
-
+        // if statement for when user inputs 'x' or 'X' to exit. Function call to loading screen. 
         if (playChoice == 'x' || playChoice == 'X') {
         
             beginning = loadingScreen(rouletteWheelNumbers);
         }
     }
 
-
-
     return 0;
-    
 }
 
+ // write if statement for configuring settings.
 
- // new
+ // write if statement to exit program.
 
-    
 
 /* 
 Function to check the spin table has all the correct numbers. compare the outcomes to the numbers of the table.
@@ -213,13 +220,17 @@ void checkBettingTable(int redNumbers[], int blackNumbers[], int oddNumbers[], i
      // function here.
 }
 
+/*
+Function for user to place bet for odd or even numbers on roulette table.
 
+Function prompts user for bet type, whether odd or even, spins the roulette table, thn outputs the result and returns the winnings. 
+*/
 int placeOddEvenBet( double bet, int random) {
 
     double payout;
     char choice;
 
-
+    //prompt user for bet type.
     printf("Would you like to bet on odd (o) or even (e) numbers? \n");
     if (scanf(" %c", &choice) != 1) {
         printf("Invalid input for game type.\n");
@@ -271,6 +282,11 @@ int placeOddEvenBet( double bet, int random) {
     
 }
 
+/*
+Function for user to place bet for black or red numbers on roulette table.
+
+Function prompts user for bet type, whether red or black, spins the roulette table, thn outputs the result and returns the winnings. 
+*/ 
 int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[]) {
 
     double payout = 0;
@@ -283,12 +299,14 @@ int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[
             return 1;
         }
 
+    //if user selects 'b' or 'B' then a bet will be placed on all black numbers.
     if(choice == 'b' || choice == 'B') {
 
         printf("\n  %.0f$ placed on black\n", bet);
         printf("--------------------------\n");
         printf("  The ball landed on %d\n", random);
 
+        // check if spun number is black.
         for (int i = 0; i < 19; i++) {
             if(random == blackNumbers[i]) {
                 status = 1;
@@ -302,7 +320,7 @@ int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[
         payout -= bet;
         }
     
-        //win
+        // win
         if (status == 1) {
         printf("\n     You win %.2f!\n", bet);  
         payout += bet;
@@ -315,7 +333,7 @@ int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[
         printf("--------------------------\n");
         printf("  The ball landed on %d\n", random);
 
-
+        // Check if spun number is red.
         for (int i = 0; i < 19; i++) {
             if(random == redNumbers[i]) {
                 status = 1;
@@ -323,13 +341,13 @@ int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[
             }
         }
 
-        // lose
+        // lose.
         if (status == 0) {
         printf("\n     You lose %.2f!\n", bet);
         payout -= bet;
         }
     
-        //win
+        // win.
         if (status == 1) {
         printf("\n     You win %.2f!\n", bet);  
         payout += bet;
@@ -339,13 +357,17 @@ int placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[
     return payout;
 }
 
+/*
+Function for user to place bet for numbers on roulette table.
 
+Function prompts user for bet type, which number, spins the roulette table, thn outputs the result and returns the winnings. 
+*/ 
 int placeNumberBet(double bet, int random) {
 
     double payout;
     int number;
 
-
+    //output
     printf("\nWhat number would you like to bet on? \n");
     
     if (scanf("%d", &number) != 1) {
@@ -357,13 +379,12 @@ int placeNumberBet(double bet, int random) {
     printf("--------------------------\n");
     printf("  The ball landed on %d\n", random);  // Use %d for int
 
-
+    // check if number was spun and store payout winnings.
     if (number != random) {
         printf("\n     You lose %.2f!\n", bet);
         payout -= bet;
     }
     
-
     if (number == random) {
         printf("\n     You win %.2f!\n", bet * 35);  // Roulette pays 35:1 on a single number
         payout += bet * 35;
@@ -405,7 +426,7 @@ char loadingScreen(int rouletteWheelNumbers[]) {
 char playScreen() {
 
     char choice; 
-    printf("------------PLAY--------------\n\n");
+    printf("-------------PLAY-------------\n\n");
     printf("Play Menu: \n");
     printf("- Place Bet       (p) \n");
     printf("- Table Summary   (t) \n");
