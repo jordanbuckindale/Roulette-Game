@@ -148,6 +148,7 @@ int main() {
         if (playChoice == 'x' || playChoice == 'X') {
         
             beginning = loadingScreen(rouletteWheelNumbers);
+
         }
     }
 
@@ -201,6 +202,13 @@ void checkRouletteNumbers(int rouletteWheelNumbers[]) {
 
     printf("*****ALL NUMBERS PRESENT******\n\n");
 
+    printf("*******  ******   *      *  *      ****** ******* *******  ******        \n");
+    printf("*     * *      *  *      *  *      *         *       *     *        \n");
+    printf("******* *      *  *      *  *      *         *       *     *        \n");
+    printf("*   *   *      *  *      *  *      ****      *       *     ****        \n");
+    printf("*    *  *      *  *      *  *      *         *       *     *        \n");
+    printf("*     *  ******    ******   ****** ******    *       *     ******        ");
+    printf("                               \n");   
 }
 
 /*
@@ -580,6 +588,7 @@ char promptQuit() {
     
     char stop;
     printf("Would you like to quit (y/n)? ");
+
 
     if (scanf(" %c", &stop) != 1) {
             printf("Invalid entry.\n");
