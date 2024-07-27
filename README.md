@@ -14,12 +14,12 @@ Two component program with backend game logic and front end interactive playing 
 ## Components of the GUI 
 Some items include:
 * Spinning roulette wheel
+* Betting table
 
   
-
 Goal: 
-- learn implementation of GUI 
-- refresh c programming syntax
--
-- gamble like a degen :)
+- Learn implementation of GUI 
+- Refresh c programming syntax
+- Implement modularization
+- Gamble like a degen :)
 
