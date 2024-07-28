@@ -158,7 +158,10 @@ spinning animation so taking 16 miliseconds per refresh we can
 make it increment by 0.016. 
 */
 gboolean update_wheel(gpointer user_data) {
+
     WheelState *state = (WheelState*)user_data;
+
+
     if (state && state->spinning) {
         
         // calculate the current speed of the spin by using cosine of the spin_duration.
@@ -172,13 +175,10 @@ gboolean update_wheel(gpointer user_data) {
         // adjust angle speed by multiplying with speed variable (from full angle rotation to 0)
         double new_angle = state->angle * current_speed;
         
-        // increment and store new spin duratation into structure.
         //The increment value of 0.016 seconds corresponds to the 16 milliseconds 
-        //refresh rate (which is the typical frame rate of 60 frames per second). 
         state->spin_duration += 0.016;
-        // test output for speed of rotation per wheel refresh.
-        printf("%f\n", current_speed);
-        // increment angle and new angle into structure.
+        
+        // increment and store new angle into structure.
         state->angle += new_angle;
 
         //make sure the angle is within range (0 to 2*PI)
