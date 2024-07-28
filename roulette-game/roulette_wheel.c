@@ -11,6 +11,13 @@ a roulette wheel.
 The purpose of this program is to get an understanding
 of the GTK library and its capabilities to be able to
 implement its full potential in other applications.
+
+To Do: 
+(1) - implement variable based wheel spin animation (update_wheel function)
+(2) - add ball variable to structure
+(3) - update ball's position in wheelstate struct
+(4) - draw ball in on_draw function
+
 -----------------------------------------------------
 */
 #include <gtk/gtk.h>
@@ -30,6 +37,8 @@ Data:
 typedef struct {
     double angle; //-> angle (angle to rotate wheel)
     int spinning; //-> spinning (boolean: true/false)
+    double initial_speed; //-> speed of spin
+    double spin_duration;//-> duration of spin
     GtkWidget *drawing_area; //-> *drawing_area (GTK widget pointer)
 } WheelState;
 
@@ -124,11 +133,29 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     
     return FALSE;
 }
-
+// function to update wheel while program is running. This includes changing the wheel angle.
 gboolean update_wheel(gpointer user_data) {
     WheelState *state = (WheelState*)user_data;
+
     if (state && state->spinning) {
-        state->angle += 0.02;
+        
+        // create variable to store current duration of spin.
+        // this will be used to check how far into spin process it is.
+        double current_speed = cos(state->spin_duration);
+
+        // Ensure current_speed is non-negative, since it is based on cos function heading toward pi/2.
+        if (current_speed < 0) {
+            current_speed = 0;
+            state->spinning = 0;  // Stop spinning when speed drops to zero
+        }
+        // adjust angle speed by multiplying with speed variable (from full angle rotation to 0)
+        double new_angle = state->angle * current_speed;
+        // increment and store new spin duratation into structure.
+        state->spin_duration += 0.016;
+        // test output for speed of rotation per wheel refresh.
+        printf("%f\n", current_speed);
+        // store new angle into structure.
+        state->angle = 0.4 + new_angle;
         if (state->angle > 2 * M_PI) {
             state->angle -= 2 * M_PI;
         }
@@ -136,6 +163,7 @@ gboolean update_wheel(gpointer user_data) {
         if (state->drawing_area) {
             gtk_widget_queue_draw(state->drawing_area);
         }
+
     }
     return TRUE;  // Always return TRUE to keep the timer running
 }
@@ -176,8 +204,9 @@ int main(int argc, char *argv[]) {
     
     // create wheel.
     WheelState *state = g_new(WheelState, 1);
-    state->angle = 0;
+    state->angle = 0.03;
     state->spinning = 1;
+    state-> spin_duration = 0;
     state->drawing_area = drawing_area;
     
     // set size of widgets.
