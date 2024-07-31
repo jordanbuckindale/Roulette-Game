@@ -2,7 +2,7 @@
 Header file to connect the game logic to the gui.
 
 
-must include all the functions for the game logic in here
+must include all the functions for the user interface in here
 */
 
 ----------------------------------------------------------------------
