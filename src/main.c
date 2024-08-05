@@ -12,7 +12,7 @@ To Do:
 */
 
 #include <gtk/gtk.h>
-#include "roulette_ui.h"
+#include "rouletteui.h"
 
 typedef struct {
     GtkWidget *window;
