@@ -1,20 +1,32 @@
 /* 
+----------------------------------------------------------------------
 Header file to connect the game logic to the gui.
 
 
 must include all the functions for the user interface in here
+----------------------------------------------------------------------
 */
 
-----------------------------------------------------------------------
-ex. 
+#ifndef ROULETTEUI_H
+#define ROULETTEUI_H
 
-#ifndef ROULETTE_GAME_H
-#define ROULETTE_GAME_H
+#include <gtk/gtk.h>
 
-// Declare the functions for game logic
-double placeNumberBet(int number, double bet, int random);
-double placeOddEvenBet(double bet, int random);
-double placeBlackRedBet(double bet, int random, int blackNumbers[], int redNumbers[]);
+typedef struct {
+    double angle;
+    int spinning;
+    double initial_speed;
+    double spin_duration;
+    GtkWidget *drawing_area;
+} WheelState;
 
-#endif
-----------------------------------------------------------------------
+typedef struct {
+    GtkWidget *drawing_area; //-> *drawing_area (GTK widget pointer)
+} betting_table;
+
+GtkWidget* create_roulette_wheel(void);
+gboolean update_wheel(gpointer user_data);
+
+GtkWidget* create_roulette_table(void);
+
+#endif // WHEEL_H
