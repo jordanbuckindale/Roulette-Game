@@ -23,3 +23,8 @@ Goal:
 - Implement modularization
 - Gamble like a degen :)
 
+Aug 5th Progress:
+- randomized spin
+- designed betting board
+- fixed visual look of wheel
+<img width="833" alt="Screenshot 2024-08-05 at 14 59 03" src="https://github.com/user-attachments/assets/af9e6809-352b-4dd6-bdcc-8218596980a3">
