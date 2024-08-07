@@ -115,6 +115,23 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
         // Restore the context state
         cairo_restore(cr);
     }
+
+    cairo_move_to(cr, 0, 0); // Move to center of the wheel
+    cairo_set_source_rgb(cr, 0.25, 0.5, 0.25);
+    cairo_arc(cr, 0, 0, (WHEEL_SIZE/2 - 10) / 2, 0, 2 * M_PI); // Draw the segment of the wheel
+    cairo_close_path(cr); // Close the path to the center
+    cairo_fill(cr); // Fill the segment
+
+    // Set the outline color and width
+    cairo_set_line_width(cr, 2); // Width of the outline
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_arc(cr, 0, 0, (WHEEL_SIZE/2 - 10) / 2, 0, 2 * M_PI);
+    cairo_stroke(cr);
+    cairo_arc(cr, 0, 0, (WHEEL_SIZE/2 - 10), 0, 2 * M_PI);
+    cairo_stroke(cr);
+
+    cairo_arc(cr, 0, 0, (WHEEL_SIZE/2 - 45), 0, 2 * M_PI);
+    cairo_stroke(cr);
     
     return FALSE;
 }
@@ -250,13 +267,17 @@ window for the user to interact with.
 // }
 
 GtkWidget* create_roulette_wheel(void) {
+
+    // Seed the random number generator once in main
+    srand(time(NULL));
+    
     GtkWidget *drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, WHEEL_SIZE, WHEEL_SIZE);
 
     WheelState *state = g_new(WheelState, 1);
     state->angle = 0.03;
     state->spinning = 1;
-    state->spin_duration = 0;
+    state->spin_duration = (M_PI / 2) * ((double) rand() / RAND_MAX);
     state->drawing_area = drawing_area;
 
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(on_draw), state);
