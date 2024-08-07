@@ -30,8 +30,7 @@ static void setup_ui(RouletteUI *ui) {
 
     GtkWidget *grid = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(ui->window), grid);
-    cairo_set_source_rgb(ui, 0.25, 0.5, 0.25);
-    cairo_paint(ui);
+
 
     // Roulette Wheel
     //ui->wheel_area = draw_roulette_wheel_new();
@@ -41,18 +40,21 @@ static void setup_ui(RouletteUI *ui) {
     // Betting Table
     //ui->table_area = gtk_drawing_area_new();
     ui->table_area = create_roulette_table();
-    gtk_widget_set_size_request(ui->table_area, 400, 300);
-    gtk_grid_attach(GTK_GRID(grid), ui->table_area, 2, 0, 3, 2);
+    gtk_widget_set_size_request(ui->table_area, 400, 200);
+    gtk_grid_attach(GTK_GRID(grid), ui->table_area, 2, 0, 3, 1.5);
 
     // Labels
-    ui->balance_label = gtk_label_new("Balance: $1000");
-    gtk_grid_attach(GTK_GRID(grid), ui->balance_label, 2, 2, 1, 1);
+    
+    ui->balance_label = create_roulette_chips();
+    gtk_widget_set_size_request(ui->balance_label, 400, 100);
+    gtk_grid_attach(GTK_GRID(grid), ui->balance_label, 2, 1.5, 3, 2);
 
-    ui->winnings_label = gtk_label_new("Winnings: $0");
-    gtk_grid_attach(GTK_GRID(grid), ui->winnings_label, 4, 2, 1, 1);
+    // ui->winnings_label = gtk_label_new("Winnings: $0");
+    // gtk_grid_attach(GTK_GRID(grid), ui->winnings_label, 4, 2, 1, 1);
 
-    // Buttons
+    // Buttons 
     ui->bet_total_button = gtk_button_new_with_label("Bet Total: $0");
+    
     gtk_grid_attach(GTK_GRID(grid), ui->bet_total_button, 2, 3, 1, 1);
 
     ui->place_bet_button = gtk_button_new_with_label("Place Bet");
