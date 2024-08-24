@@ -3,18 +3,6 @@
 #include <stdio.h>
 #include "wheel.h"
 
-/* 
-Wheel structure.
-
-Data: 
--> angle (angle to rotate wheel)
--> spinning (boolean: true/false)
--> *drawing_area (GTK widget pointer)
-*/
-// typedef struct {
-//     GtkWidget *drawing_area; //-> *drawing_area (GTK widget pointer)
-// } betting_table;
-
 /*
 Function to create the draw object. 
 
@@ -30,9 +18,9 @@ gboolean on_draw_table(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
 
     // Set up dimensions
     int width = 400;
-    int height = 300;
+    int height = 200;
     int cell_width = width / 13;  // 12 number columns + 1 for 0
-    int cell_height = height / 4;  // 3 number rows + 1 for additional bets
+    int cell_height = height / 5;  // 3 number rows + 1 for additional bets
 
     // Draw number grid
     for (int i = 0; i < 36; i++) {
@@ -60,23 +48,165 @@ gboolean on_draw_table(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
         cairo_show_text(cr, num_str);
     }
 
-    // Add 0
-    cairo_set_source_rgb(cr, 0, 0.5, 0);  // Green
-    cairo_rectangle(cr, 12 * cell_width, 0, cell_width, 3 * cell_height);
+    
+    // Add 2 to 1 (1st row).
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  // Green
+    cairo_rectangle(cr, 12 * cell_width, 0, cell_width, cell_height);
     cairo_fill(cr);
     cairo_set_source_rgb(cr, 1, 1, 1);  // White text
-    cairo_move_to(cr, 12.5 * cell_width - 10, 1.5 * cell_height);
-    cairo_show_text(cr, "0");
+    
+    cairo_save(cr);
+    cairo_set_font_size(cr, 10);
+    cairo_rotate(cr, -M_PI_2);
+    cairo_move_to(cr, -0.9 * cell_height, 12.6 * cell_width);
+    cairo_show_text(cr, "2 TO 1");
+    cairo_restore(cr);
 
-    // // Add other betting areas (simplified)
-    // cairo_set_source_rgb(cr, 0.2, 0.2, 0.2);  // Dark gray
-    // cairo_rectangle(cr, 0, 3 * cell_height, 4 * cell_width, cell_height);
-    // cairo_fill(cr);
-    // cairo_set_source_rgb(cr, 1, 1, 1);
-    // cairo_move_to(cr, 1.5 * cell_width, 3.5 * cell_height);
-    // cairo_show_text(cr, "1st 12");
+    // Add 2 to 1 (2nd row).
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  // Green
+    cairo_rectangle(cr, 12 * cell_width, 1 * cell_height, cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);  // White text
+    
+    
+    cairo_save(cr);
+    cairo_set_font_size(cr, 10);
+    cairo_rotate(cr, -M_PI_2);
+    cairo_move_to(cr, -1.9 * cell_height, 12.6 * cell_width);
+    cairo_show_text(cr, "2 TO 1");
+    cairo_restore(cr);
+
+    // Add 2 to 1 (3rd row).
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  // Green
+    cairo_rectangle(cr, 12 * cell_width, 2 * cell_height, cell_width,cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);  // White text
+    
+    cairo_save(cr);
+    cairo_set_font_size(cr, 10);
+    cairo_rotate(cr, -M_PI_2);
+    cairo_move_to(cr, -2.9 * cell_height, 12.6 * cell_width);
+    cairo_show_text(cr, "2 TO 1");
+    cairo_restore(cr);
+
+    // 1st dozen
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  // Dark gray
+    cairo_rectangle(cr, 0, 3 * cell_height, 4 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 1.25 * cell_width, 3.5 * cell_height);
+    cairo_show_text(cr, "1ST 12");
+
+    // 2nd dozen
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  
+    cairo_rectangle(cr, 4 * cell_width, 3 * cell_height, 4 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 5.25 * cell_width, 3.5 * cell_height);
+    cairo_show_text(cr, "2ND 12");
+    // 3rd dozen
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  
+    cairo_rectangle(cr, 8 * cell_width, 3 * cell_height, 4 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 9.25 * cell_width, 3.5 * cell_height);
+    cairo_show_text(cr, "3RD 12");
 
     // Add more betting areas and text as needed
+    // 1 to 18
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  
+    cairo_rectangle(cr, 0, 4 * cell_height, 2 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 0.1 * cell_width, 4.5 * cell_height);
+    cairo_show_text(cr, "1 TO 18");
+    // even
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  
+    cairo_rectangle(cr, 2 * cell_width, 4 * cell_height, 2 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 2.25 * cell_width, 4.5 * cell_height);
+    cairo_show_text(cr, "EVEN");
+    // red
+    cairo_set_source_rgb(cr, 1, 0.0, 0.0);  
+    cairo_rectangle(cr, 4 * cell_width, 4 * cell_height, 2 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 4.5 * cell_width, 4.5 * cell_height);
+    cairo_show_text(cr, "RED");
+    // black
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);  // Dark gray
+    cairo_rectangle(cr, 6 * cell_width, 4 * cell_height, 2 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 6.1 * cell_width, 4.5 * cell_height);
+    cairo_show_text(cr, "BLACK"); 
+    // odd
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  // Dark gray
+    cairo_rectangle(cr, 8 * cell_width, 4 * cell_height, 2 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 8.3 * cell_width, 4.5 * cell_height);
+    cairo_show_text(cr, "ODD");
+    // 19 to 36
+    cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  // Dark gray
+    cairo_rectangle(cr, 10 * cell_width, 4 * cell_height, 2 * cell_width, cell_height);
+    cairo_fill(cr);
+    cairo_set_source_rgb(cr, 1, 1, 1);
+    cairo_move_to(cr, 10 * cell_width, 4.5 * cell_height);
+    cairo_show_text(cr, "19 TO 36");
+
+    cairo_set_line_width(cr, 2.0);
+    
+    // outlines of betting table.
+    for( int i = 0; i <= 5; i++) {
+
+        // draw lines for first 3 rows.
+        if(i <= 3) {
+
+            // horizontal lines (1 to 3 rows). 
+            cairo_move_to(cr, 0, i * cell_height);
+            cairo_line_to(cr, 13 * cell_width, i * cell_height); // Adjust according to the number of columns
+            cairo_stroke(cr);
+        
+            // vertical lines (1 to 3 rows).
+            for(int j = 0; j < 14; j++) {
+                cairo_move_to(cr, j * cell_width, 0);
+                cairo_line_to(cr, j * cell_width, i * cell_height);
+                cairo_stroke(cr);
+            }
+        }
+
+        else {
+            // horizontal lines (4th and 5th row)
+            cairo_move_to(cr, 0, i * cell_height);
+            cairo_line_to(cr, 12 * cell_width, i * cell_height); // Adjust according to the number of columns
+            cairo_stroke(cr);
+
+            // vertical lines (4th row)
+            if(i == 4) {
+
+                for(int k = 0; k <= 3; k++) {
+                cairo_move_to(cr, k * 4 * cell_width, i * cell_height);
+                cairo_line_to(cr, k * 4 * cell_width, (i - 1) * cell_height);
+                cairo_stroke(cr);
+                }
+            }
+
+            // vertical lines (5th row)
+            if(i == 5) {
+
+                for(int k = 0; k <= 6; k++) {
+                cairo_move_to(cr, k * 2 * cell_width, i * cell_height);
+                cairo_line_to(cr, k * 2 * cell_width, (i - 1) * cell_height);
+                cairo_stroke(cr);
+                }
+            }
+
+        }
+    }     
+
+
 
     return FALSE;
 }
@@ -141,9 +271,13 @@ Function to update wheel angle and simulate the spin of the wheel using sine fun
 //     return 0;
 // }
 
+
+/*
+* function that creates and returns the roulette betting table. 
+*/
 GtkWidget* create_roulette_table(void) {
     GtkWidget *drawing_area = gtk_drawing_area_new();
-    gtk_widget_set_size_request(drawing_area, 400, 300);
+    gtk_widget_set_size_request(drawing_area, 400, 200);
 
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(on_draw_table), NULL);
     return drawing_area;

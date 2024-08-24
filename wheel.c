@@ -16,12 +16,17 @@ used in demo
 Function to trigger the wheel to spin.
  */
 void trigger_wheel_spin(WheelState *state) {
+    // Seed the random number generator
+    srand48(time(NULL));
+
+    // Generate a random number between 0 and π/8 to simulate random spin.
+    double random_in_range = drand48() * (M_PI / 8);
 
     if(state->spin_state == 0) {
         
         state->spin_state = 1;
         state->spinning = 1;
-        state->spin_duration = 0;
+        state->spin_duration = random_in_range;
         state->initial_speed = 0.2;
 
     }
@@ -158,7 +163,7 @@ gboolean update_wheel(gpointer user_data) {
 
     switch(state->spin_state) {
         case 0: // Slow constant spin
-            state->angle += 0.25 * (M_PI / 180); // 0.25 degrees per update
+            state->angle += 0.8 * (M_PI / 180); // 0.25 degrees per update
             break;
         case 1: // Fast spin
             if (state->spinning) {
@@ -168,16 +173,21 @@ gboolean update_wheel(gpointer user_data) {
                     state->spinning = 0;
                 } else {
                     state->angle += current_speed;
-                    state->spin_duration += 0.016;
+                    state->spin_duration += 0.005;
                 }
             }
             break;
         case 2: // Stopping
-            if (state->angle < 0.01) {
+            if (state->spinning == 0) {
+                
+                
+                // call game logic here since this is when wheel stops spinning.
+                sleep(3);
+
                 state->spin_state = 0;
-                state->angle = 0;
+              
             } else {
-                state->angle *= 0.95; // Gradually slow down
+                //state->angle *= 0.95; // Gradually slow down
             }
             break;
     }
