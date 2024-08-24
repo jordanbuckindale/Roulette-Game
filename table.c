@@ -22,6 +22,13 @@ static void create_chip_buttons(RouletteUI *ui, GtkGrid *grid) {
     }
 }
 
+static void on_place_bet_clicked(GtkButton *button, gpointer user_data) {
+    RouletteUI *ui = (RouletteUI*)user_data;
+    WheelState *wheel_state = g_object_get_data(G_OBJECT(ui->wheel_area), "wheel_state");
+    if (wheel_state) {
+        trigger_wheel_spin(wheel_state);
+    }
+}
 
 static void setup_ui(RouletteUI *ui) {
     ui->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -59,7 +66,9 @@ static void setup_ui(RouletteUI *ui) {
 
     ui->place_bet_button = gtk_button_new_with_label("Place Bet");
     gtk_grid_attach(GTK_GRID(grid), ui->place_bet_button, 4, 3, 1, 1);
-    //g_signal_connect(ui->place_bet_button, "clicked", G_CALLBACK(create_roulette_wheel), ui);
+  
+    g_signal_connect(ui->place_bet_button, "clicked", G_CALLBACK(on_place_bet_clicked), ui);
+
 
     // Chip Buttons
     create_chip_buttons(ui, GTK_GRID(grid));
