@@ -13,6 +13,21 @@ used in demo
 
 
 /*
+Function to trigger the wheel to spin.
+ */
+void trigger_wheel_spin(WheelState *state) {
+
+    if(state->spin_state == 0) {
+        
+        state->spin_state = 1;
+        state->spinning = 1;
+        state->spin_duration = 0;
+        state->initial_speed = 0.2;
+
+    }
+}
+
+/*
 Function to create the draw object. 
 
 Parameters (from left to right): 
@@ -63,15 +78,8 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
         cairo_close_path(cr);
         cairo_fill(cr);
 
-        // line in roulette table
-        // cairo_set_source_rgb(cr, 1, 0, 1); //set color back to white
-        // cairo_move_to(cr, 0, 0); // move to orgin of drawing area
-        // cairo_line_to(cr, 0, WHEEL_SIZE/2 - 10, i * 2 M_PI / 37, (i + 1) * 2 * M_PI /37); // draw line to arc of circle.
-        // cairo_stroke(cr); // color.
-
         // Draw the number for the current slot
         double angle = (i + 0.5) * 2 * M_PI / 37; // Center of the slice
-        //double text_radius = WHEEL_SIZE / 2 - 30; // Adjust as needed
         double text_x = (WHEEL_SIZE / 2 - 30) * cos(angle);
         double text_y = (WHEEL_SIZE / 2 - 30) * sin(angle);
 
@@ -146,67 +154,70 @@ spinning animation so taking 16 miliseconds per refresh we can
 make it increment by 0.016. 
 */
 gboolean update_wheel(gpointer user_data) {
-
     WheelState *state = (WheelState*)user_data;
 
-
-    if (state && state->spinning) {
-        
-        // calculate the current speed of the spin by using cosine of the spin_duration.
-        double current_speed = cos(state->spin_duration);
-
-        // Ensure current_speed is non-negative, since it is based on cos function heading toward pi/2.
-        if (current_speed < 0) {
-            current_speed = 0;
-            state->spinning = 0;  // Stop spinning when speed drops to zero
-        }
-        // adjust angle speed by multiplying with speed variable (from full angle rotation to 0)
-        double new_angle = state->angle * current_speed;
-        
-        //The increment value of 0.016 seconds corresponds to the 16 milliseconds 
-        state->spin_duration += 0.016;
-        
-        // increment and store new angle into structure.
-        state->angle += new_angle;
-
-        //make sure the angle is within range (0 to 2*PI)
-        if (state->angle > 2 * M_PI) {
-            state->angle -= 2 * M_PI;
-        }
-        printf("Updating wheel. Angle: %f\n", state->angle);
-        if (state->drawing_area) {
-            gtk_widget_queue_draw(state->drawing_area);
-        }
-
+    switch(state->spin_state) {
+        case 0: // Slow constant spin
+            state->angle += 0.25 * (M_PI / 180); // 0.25 degrees per update
+            break;
+        case 1: // Fast spin
+            if (state->spinning) {
+                double current_speed = state->initial_speed * cos(state->spin_duration);
+                if (current_speed < 0.01) {
+                    state->spin_state = 2;
+                    state->spinning = 0;
+                } else {
+                    state->angle += current_speed;
+                    state->spin_duration += 0.016;
+                }
+            }
+            break;
+        case 2: // Stopping
+            if (state->angle < 0.01) {
+                state->spin_state = 0;
+                state->angle = 0;
+            } else {
+                state->angle *= 0.95; // Gradually slow down
+            }
+            break;
     }
 
-    else {
-
-        state->angle += state->angle;
-
+    // Normalize angle
+    while (state->angle >= 2 * M_PI) {
+        state->angle -= 2 * M_PI;
     }
-    return TRUE;  // Always return TRUE to keep the timer running
+
+    if (state->drawing_area) {
+        gtk_widget_queue_draw(state->drawing_area);
+    }
+
+    return TRUE;
 }
 
 /*
  create the wheel and return it to the main file.
 */
 GtkWidget* create_roulette_wheel(void) {
-
-    // Seed the random number generator once in main
-    srand(time(NULL));
-    
+    // Create a new drawing area
     GtkWidget *drawing_area = gtk_drawing_area_new();
     gtk_widget_set_size_request(drawing_area, WHEEL_SIZE, WHEEL_SIZE);
     
-  // set up the wheel variables.
+    // Initialize the wheel state
     WheelState *state = g_new(WheelState, 1);
-    state->angle = 0.03;
-    state->spinning = 1;
-    state->spin_duration = (M_PI / 2) * ((double) rand() / RAND_MAX);
+    state->angle = 0;
+    state->spinning = 0;
+    state->spin_duration = 0;
+    state->initial_speed = 0;
     state->drawing_area = drawing_area;
+    state->spin_state = 0; // Start with slow spin
 
+    // Associate the state with the drawing area
+    g_object_set_data_full(G_OBJECT(drawing_area), "wheel_state", state, g_free);
+
+    // Connect the draw signal
     g_signal_connect(G_OBJECT(drawing_area), "draw", G_CALLBACK(on_draw), state);
+
+    // Set up a timer to update the wheel
     g_timeout_add(16, update_wheel, state);
 
     return drawing_area;
