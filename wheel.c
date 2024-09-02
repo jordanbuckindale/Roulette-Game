@@ -10,6 +10,7 @@ used in demo
 #include "wheel.h"
 
 #define WHEEL_SIZE 400
+#define BALL_RADIUS 5
 
 
 /*
@@ -19,7 +20,7 @@ void trigger_wheel_spin(WheelState *state) {
     // Seed the random number generator
     srand48(time(NULL));
 
-    // Generate a random number between 0 and π/8 to simulate random spin.
+    // Generate a random number between 0 and π/2
     double random_in_range = drand48() * (M_PI / 8);
 
     if(state->spin_state == 0) {
@@ -28,6 +29,7 @@ void trigger_wheel_spin(WheelState *state) {
         state->spinning = 1;
         state->spin_duration = random_in_range;
         state->initial_speed = 0.2;
+        state->ball_speed = 0.3;  // Set initial ball speed
 
     }
 }
@@ -47,8 +49,9 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     WheelState *state = (WheelState*)user_data;
     
     // print to console.
-    printf("Drawing wheel. Angle: %f\n", state->angle);
-    
+    //printf("Drawing wheel. Angle: %f\n", state->angle);
+    printf("Drawing wheel. Angle: %f, Ball Angle: %f\n", state->angle, state->ball_angle);
+ 
     // call cairo function(s) to set background color.
     cairo_set_source_rgb(cr, 0.25, 0.5, 0.25);
     cairo_paint(cr);
@@ -132,8 +135,22 @@ gboolean on_draw(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     cairo_arc(cr, 0, 0, (WHEEL_SIZE/2 - 45), 0, 2 * M_PI);
     cairo_stroke(cr);
     
+    // Draw the ball
+    cairo_save(cr);  // Save the current state
+    cairo_rotate(cr, -state->angle);  // Rotate back to cancel wheel rotation
+
+    double ball_x = (WHEEL_SIZE/2 - 80) * cos(state->ball_angle);
+    double ball_y = (WHEEL_SIZE/2 - 80) * sin(state->ball_angle);
+    
+    cairo_set_source_rgb(cr, 1, 1, 1);  // White color for the ball
+    cairo_arc(cr, ball_x, ball_y, BALL_RADIUS, 0, 2 * M_PI);
+    cairo_fill(cr);
+
+    cairo_restore(cr);  // Restore the previous state
+    
     return FALSE;
 }
+
 /*
 Function to update wheel angle and simulate the spin of the wheel using sine function as a multiplier on the angle.
 
@@ -164,6 +181,7 @@ gboolean update_wheel(gpointer user_data) {
     switch(state->spin_state) {
         case 0: // Slow constant spin
             state->angle += 0.8 * (M_PI / 180); // 0.25 degrees per update
+            state->ball_angle = state->angle;  // Ball moves with wheel
             break;
         case 1: // Fast spin
             if (state->spinning) {
@@ -173,29 +191,28 @@ gboolean update_wheel(gpointer user_data) {
                     state->spinning = 0;
                 } else {
                     state->angle += current_speed;
+                    state->ball_angle -= state->ball_speed;
                     state->spin_duration += 0.005;
+                    state->ball_speed *= 0.995;  // Slow down the ball gradually
                 }
             }
             break;
         case 2: // Stopping
             if (state->spinning == 0) {
                 
-                
+                state->ball_angle = round(state->ball_angle / (2 * M_PI / 37)) * (2 * M_PI / 37); 
                 // call game logic here since this is when wheel stops spinning.
                 sleep(3);
-
                 state->spin_state = 0;
-              
-            } else {
-                //state->angle *= 0.95; // Gradually slow down
             }
             break;
     }
 
     // Normalize angle
-    while (state->angle >= 2 * M_PI) {
-        state->angle -= 2 * M_PI;
-    }
+    while (state->angle >= 2 * M_PI) state->angle -= 2 * M_PI;
+    while (state->ball_angle >= 2 * M_PI) state->ball_angle -= 2 * M_PI;
+    while (state->ball_angle < 0) state->ball_angle += 2 * M_PI;
+
 
     if (state->drawing_area) {
         gtk_widget_queue_draw(state->drawing_area);
@@ -219,7 +236,10 @@ GtkWidget* create_roulette_wheel(void) {
     state->spin_duration = 0;
     state->initial_speed = 0;
     state->drawing_area = drawing_area;
-    state->spin_state = 0; // Start with slow spin
+    state->spin_state = 0;
+    state->ball_angle = 0;
+    state->ball_speed = 0;
+
 
     // Associate the state with the drawing area
     g_object_set_data_full(G_OBJECT(drawing_area), "wheel_state", state, g_free);

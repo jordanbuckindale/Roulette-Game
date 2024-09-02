@@ -10,6 +10,8 @@ typedef struct {
     double spin_duration;
     GtkWidget *drawing_area;
     int spin_state;
+    double ball_angle;
+    double ball_speed;
 } WheelState;
 
 typedef struct {
@@ -20,7 +22,6 @@ typedef struct {
 // WHEEL.C
 GtkWidget* create_roulette_wheel(void);
 gboolean update_wheel(gpointer user_data);
-void trigger_wheel_spin(WheelState *state);
 
 // BETS.C 
 GtkWidget* create_roulette_table(void);
