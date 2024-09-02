@@ -34,6 +34,23 @@ void trigger_wheel_spin(WheelState *state) {
     }
 }
 
+int get_landed_number(double wheel_angle, double ball_angle) {
+  
+    int roulette_numbers[] = {0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26};
+    
+    double relative_angle = ball_angle - wheel_angle;
+
+    // Normalize the angle
+    while (relative_angle < 0) relative_angle += 2 * M_PI;
+    while (relative_angle >= 2 * M_PI) relative_angle -= 2 * M_PI;
+    
+    int slice_index = (int)((relative_angle / (2 * M_PI)) * 37);
+    
+    return roulette_numbers[slice_index];
+
+}
+
+
 /*
 Function to create the draw object. 
 
@@ -200,7 +217,10 @@ gboolean update_wheel(gpointer user_data) {
         case 2: // Stopping
             if (state->spinning == 0) {
                 
-                state->ball_angle = round(state->ball_angle / (2 * M_PI / 37)) * (2 * M_PI / 37); 
+                // calculate number that the ball lands on.
+                int result = get_landed_number(state->angle, state->ball_angle);
+                printf("Number landed on: %d\n", result);
+
                 // call game logic here since this is when wheel stops spinning.
                 sleep(3);
                 state->spin_state = 0;
