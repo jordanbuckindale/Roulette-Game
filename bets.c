@@ -21,18 +21,32 @@ gboolean on_draw_table(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     int height = 200;
     int cell_width = width / 13;  // 12 number columns + 1 for 0
     int cell_height = height / 5;  // 3 number rows + 1 for additional bets
-
+    int redNumbers[] = {1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36};
+    int bet_num = 0;    //start index
+    int red_num_found; 
+    
     // Draw number grid
     for (int i = 0; i < 36; i++) {
         int col = i / 3;
         int row = 2 - (i % 3);  // Reverse row order
+        bet_num ++; //increment bet number by one
+        red_num_found = 0; // false
         
-        // Set color (red for odd, black for even)
-        if ((i + 1) % 2 == 0) {
-            cairo_set_source_rgb(cr, 0, 0, 0);  // Black
-        } else {
-            cairo_set_source_rgb(cr, 0.8, 0, 0);  // Red
+        // check if they are red numbers, if not, they are black.
+        for(int j = 0; j < 18; j++) {
+
+            if(bet_num == redNumbers[j]) {
+                cairo_set_source_rgb(cr, 0.8, 0, 0);  // Red
+                red_num_found = 1;
+                break;
+            }
         }
+    
+        // if red number not found, treat as black number.
+        if(red_num_found == 0) {
+            cairo_set_source_rgb(cr, 0, 0, 0);  // black
+        }
+        
 
         // Draw rectangle
         cairo_rectangle(cr, col * cell_width, row * cell_height, cell_width, cell_height);
