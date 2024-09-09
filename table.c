@@ -18,7 +18,8 @@ typedef struct {
 
 
 static void on_table_click(GtkWidget *widget, GdkEventButton *event, gpointer user_data) {
-    RouletteUI *ui = (RouletteUI*)user_data;
+    //RouletteUI *ui = (RouletteUI*)user_data;
+    
     // Implement logic to handle clicks on the betting table
     // Update current_bet_type and current_bet_value based on where the user clicked
     // Update the bet_total_label
@@ -28,6 +29,10 @@ static void on_spin_clicked(GtkButton *button, gpointer user_data) {
     RouletteUI *ui = (RouletteUI*)user_data;
     WheelState *wheel_state = g_object_get_data(G_OBJECT(ui->wheel_area), "wheel_state");
     
+    // temporary fix to spin wheel until betting system is created.
+    trigger_wheel_spin(wheel_state);
+    
+    /*
     if (wheel_state && ui->current_bet > 0) {
         trigger_wheel_spin(wheel_state);
         
@@ -49,6 +54,7 @@ static void on_spin_clicked(GtkButton *button, gpointer user_data) {
         ui->current_bet = 0;
         gtk_label_set_text(GTK_LABEL(ui->bet_total_label), "Current Bet: $0");
     }
+    */
 }
 
 static void setup_ui(RouletteUI *ui) {
@@ -67,10 +73,10 @@ static void setup_ui(RouletteUI *ui) {
     char balance_text[50];
     snprintf(balance_text, sizeof(balance_text), "Balance: $%d", ui->balance);
     ui->balance_label = gtk_label_new(balance_text);
-    gtk_grid_attach(GTK_GRID(grid), ui->balance_label, 2, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), ui->balance_label, 2, 1, 1, 1);
     
     ui->bet_total_label = gtk_label_new("Current Bet: $0");
-    gtk_grid_attach(GTK_GRID(grid), ui->bet_total_label, 3, 2, 1, 1);
+    gtk_grid_attach(GTK_GRID(grid), ui->bet_total_label, 3, 1, 1, 1);
     
     GtkWidget *spin_button = gtk_button_new_with_label("Spin");
     gtk_grid_attach(GTK_GRID(grid), spin_button, 4, 2, 1, 1);
