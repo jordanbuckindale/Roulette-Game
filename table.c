@@ -1,32 +1,53 @@
 #include <gtk/gtk.h>
 #include "wheel.h"
+#include "logic.c"
 
 typedef struct {
     GtkWidget *window;
     GtkWidget *wheel_area;
     GtkWidget *table_area;
+    GtkWidget *chips_area;
     GtkWidget *balance_label;
-    GtkWidget *winnings_label;
-    GtkWidget *bet_total_button;
-    GtkWidget *place_bet_button;
-    GtkWidget *chip_buttons[5];
-    // Add other necessary components
+    GtkWidget *bet_total_label;
+    GtkWidget *result_label;
+    int balance;
+    int current_bet;
+    int current_bet_type;
+    int current_bet_value;
 } RouletteUI;
 
-static void create_chip_buttons(RouletteUI *ui, GtkGrid *grid) {
-    const char *chip_values[] = {"250", "100", "25", "5", "1"};
-    for (int i = 0; i < 5; i++) {
-        ui->chip_buttons[i] = gtk_button_new_with_label(chip_values[i]);
-        gtk_grid_attach(grid, ui->chip_buttons[i], i, 4, 1, 1);
-        // Connect click handlers and style the buttons
-    }
+
+static void on_table_click(GtkWidget *widget, GdkEventButton *event, gpointer user_data) {
+    RouletteUI *ui = (RouletteUI*)user_data;
+    // Implement logic to handle clicks on the betting table
+    // Update current_bet_type and current_bet_value based on where the user clicked
+    // Update the bet_total_label
 }
 
-static void on_place_bet_clicked(GtkButton *button, gpointer user_data) {
+static void on_spin_clicked(GtkButton *button, gpointer user_data) {
     RouletteUI *ui = (RouletteUI*)user_data;
     WheelState *wheel_state = g_object_get_data(G_OBJECT(ui->wheel_area), "wheel_state");
-    if (wheel_state) {
+    
+    if (wheel_state && ui->current_bet > 0) {
         trigger_wheel_spin(wheel_state);
+        
+        int winning_number = spin_wheel();
+        int result = evaluate_bet(ui->current_bet_type, ui->current_bet_value, winning_number);
+        
+        if (result > 0) {
+            update_balance(&ui->balance, ui->current_bet, result);
+            gtk_label_set_text(GTK_LABEL(ui->result_label), "You won!");
+        } else {
+            update_balance(&ui->balance, ui->current_bet, -1);
+            gtk_label_set_text(GTK_LABEL(ui->result_label), "You lost.");
+        }
+        
+        char balance_text[50];
+        snprintf(balance_text, sizeof(balance_text), "Balance: $%d", ui->balance);
+        gtk_label_set_text(GTK_LABEL(ui->balance_label), balance_text);
+        
+        ui->current_bet = 0;
+        gtk_label_set_text(GTK_LABEL(ui->bet_total_label), "Current Bet: $0");
     }
 }
 
@@ -38,7 +59,29 @@ static void setup_ui(RouletteUI *ui) {
     GtkWidget *grid = gtk_grid_new();
     gtk_container_add(GTK_CONTAINER(ui->window), grid);
 
+    ui->balance = 1000;  // Starting balance
+    ui->current_bet = 0;
+    ui->current_bet_type = -1;
+    ui->current_bet_value = -1;
 
+    char balance_text[50];
+    snprintf(balance_text, sizeof(balance_text), "Balance: $%d", ui->balance);
+    ui->balance_label = gtk_label_new(balance_text);
+    gtk_grid_attach(GTK_GRID(grid), ui->balance_label, 2, 2, 1, 1);
+    
+    ui->bet_total_label = gtk_label_new("Current Bet: $0");
+    gtk_grid_attach(GTK_GRID(grid), ui->bet_total_label, 3, 2, 1, 1);
+    
+    GtkWidget *spin_button = gtk_button_new_with_label("Spin");
+    gtk_grid_attach(GTK_GRID(grid), spin_button, 4, 2, 1, 1);
+    g_signal_connect(spin_button, "clicked", G_CALLBACK(on_spin_clicked), ui);
+    
+    g_signal_connect(ui->table_area, "button-press-event", G_CALLBACK(on_table_click), ui);
+   
+    ui->chips_area = create_roulette_chips();
+    gtk_widget_set_size_request(ui->chips_area, 400, 100);
+    gtk_grid_attach(GTK_GRID(grid), ui->chips_area, 2, 2, 2, 1);
+    
     // Roulette Wheel
     //ui->wheel_area = draw_roulette_wheel_new();
     ui->wheel_area = create_roulette_wheel();
@@ -49,29 +92,6 @@ static void setup_ui(RouletteUI *ui) {
     ui->table_area = create_roulette_table();
     gtk_widget_set_size_request(ui->table_area, 400, 200);
     gtk_grid_attach(GTK_GRID(grid), ui->table_area, 2, 0, 3, 1);
-
-    // Labels
-    
-    ui->balance_label = create_roulette_chips();
-    gtk_widget_set_size_request(ui->balance_label, 400, 100);
-    gtk_grid_attach(GTK_GRID(grid), ui->balance_label, 2, 1, 3, 2);
-
-    // ui->winnings_label = gtk_label_new("Winnings: $0");
-    // gtk_grid_attach(GTK_GRID(grid), ui->winnings_label, 4, 2, 1, 1);
-
-    // Buttons 
-    ui->bet_total_button = gtk_button_new_with_label("Bet Total: $0");
-    
-    gtk_grid_attach(GTK_GRID(grid), ui->bet_total_button, 2, 3, 1, 1);
-
-    ui->place_bet_button = gtk_button_new_with_label("Place Bet");
-    gtk_grid_attach(GTK_GRID(grid), ui->place_bet_button, 4, 3, 1, 1);
-  
-    g_signal_connect(ui->place_bet_button, "clicked", G_CALLBACK(on_place_bet_clicked), ui);
-
-
-    // Chip Buttons
-    create_chip_buttons(ui, GTK_GRID(grid));
 
     // Connect signals and set up drawing callbacks
     // ...
@@ -85,6 +105,9 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Failed to initialize GTK\n");
         return 1;
     }
+    
+    srand(time(NULL));  // Initialize random number generator
+    initialize_roulette_numbers();
 
     RouletteUI ui;
     setup_ui(&ui);

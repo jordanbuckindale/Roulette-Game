@@ -31,8 +31,8 @@ gboolean on_draw_table(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
     cairo_fill(cr);
     cairo_set_source_rgb(cr, 1, 1, 1);  // White text
     cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 20);
-    cairo_move_to(cr, 0.3 * cell_width, 1.5 * cell_height);
+    cairo_set_font_size(cr, 15);
+    cairo_move_to(cr, 0.3 * cell_width, 1.6 * cell_height);
     cairo_show_text(cr, "0");
 
     // Draw number grid
@@ -72,7 +72,6 @@ gboolean on_draw_table(GtkWidget *widget, cairo_t *cr, gpointer user_data) {
         cairo_show_text(cr, num_str);
     }
 
-    
     // Add 2 to 1 columns
     for (int i = 0; i < 3; i++) {
         cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);  // Light gray

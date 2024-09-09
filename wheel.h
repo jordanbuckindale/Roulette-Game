@@ -22,6 +22,7 @@ typedef struct {
 // WHEEL.C
 GtkWidget* create_roulette_wheel(void);
 gboolean update_wheel(gpointer user_data);
+void trigger_wheel_spin(WheelState *state);
 
 // BETS.C 
 GtkWidget* create_roulette_table(void);
