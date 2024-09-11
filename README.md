@@ -15,6 +15,7 @@ Two component program with backend game logic and front end interactive playing 
 Some items include:
 * Spinning roulette wheel
 * Betting table
+* Betting chips
 
   
 Goal: 
@@ -28,3 +29,12 @@ Aug 5th Progress:
 - designed betting board
 - fixed visual look of wheel
 <img width="833" alt="Screenshot 2024-08-05 at 14 59 03" src="https://github.com/user-attachments/assets/af9e6809-352b-4dd6-bdcc-8218596980a3">
+
+Sep 10th Progress:
+- wheel spinning functionality completed
+- roulette ball created 
+- betting chips semi finished w/ clicking functionality
+- removed redudant buttons
+- fixed layout of betting table and added '0' to it
+- <img width="943" alt="Screenshot 2024-09-10 at 21 02 06" src="https://github.com/user-attachments/assets/ae9898e0-d643-46a0-bc89-07a561616218">
+
