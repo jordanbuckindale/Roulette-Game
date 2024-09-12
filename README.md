@@ -13,9 +13,11 @@ Two component program with backend game logic and front end interactive playing 
 
 ## Components of the GUI 
 Some items include:
-* Spinning roulette wheel
+* Roulette wheel
 * Betting table
 * Betting chips
+* Balance and bet total
+* Spin button
 
   
 Goal: 
